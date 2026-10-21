@@ -25,7 +25,7 @@ export function ScrollReveal() {
 
       if (blocks.length) {
         // opacity only (not visibility): content stays available to screen readers before it scrolls in
-        gsap.set(blocks, { opacity: 0, y: 32 })
+        gsap.set(blocks, { opacity: 0, y: 20 })
         ScrollTrigger.batch(blocks, {
           start: 'top 90%',
           once: true,
@@ -33,7 +33,7 @@ export function ScrollReveal() {
             gsap.to(batch, {
               opacity: 1,
               y: 0,
-              duration: 0.9,
+              duration: 0.8,
               ease: 'expo.out',
               stagger: 0.08,
               overwrite: true,
@@ -51,6 +51,43 @@ export function ScrollReveal() {
             duration: 1.2,
             ease: 'expo.out',
             scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+          },
+        )
+      })
+
+      // Brush underlines (Marked): painted once from left to right when the heading scrolls in;
+      // headings already on screen stay complete. The clip is removed again once it is painted.
+      gsap.utils
+        .toArray<SVGSVGElement>('svg[data-draw]')
+        .filter((svg) => below(svg as unknown as HTMLElement))
+        .forEach((svg) => {
+          gsap.fromTo(
+            svg,
+            { clipPath: 'inset(0% 100% 0% 0%)' },
+            {
+              clipPath: 'inset(0% 0% 0% 0%)',
+              duration: 0.8,
+              ease: 'power3.out',
+              scrollTrigger: { trigger: svg, start: 'top 85%', once: true },
+              onComplete: () => gsap.set(svg, { clearProps: 'clipPath' }),
+            },
+          )
+        })
+      // Large photos: a slow drift inside their frame while they cross the viewport.
+      gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((img) => {
+        gsap.fromTo(
+          img,
+          { yPercent: -5, scale: 1.1 },
+          {
+            yPercent: 5,
+            scale: 1.1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: img.parentElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
           },
         )
       })

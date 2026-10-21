@@ -1,5 +1,131 @@
 # Changelog
 
+## Beschwerdeformular as on abc-mainz.de, linked in the menu (2026-10-21)
+
+Requested on 21.10.2026: the complaint form with the same content as the current website (abc-mainz.de/beschwerdeformular), and the "Beschwerdeformular" sub-item in the navigation linked.
+
+- **Form:** the "Beschwerdebogen" from the live site, question for question: 1. Ich bin … (5 choices), 2. Ich habe eine Beschwerde über … (14 choices), 3. Der Name der Person ist, 4. Der Raum / Kursnummer, Betreff, 5. Meine Beschwerde ist folgende, Lösungsvorschlag / zusätzliche Hinweise – with the original placeholders, the note "Bitte füllen Sie den Fragebogen anonym aus.", "Die Beschwerde wird anonym an ABC Mainz übermittelt." and the button "Beschwerde absenden". Like the original it asks for no name, e-mail or consent.
+- **Form system:** new field type `radio` (a fieldset with legend, two columns from 640 px, validated like a select) and an optional `placeholder` per field.
+- **Navigation:** "Über uns" › "Beschwerdeformular" (Anonym und vertraulich) links to `/formulare#beschwerde`, in the desktop dropdown and the mobile menu.
+- **Tests:** the empty-submit check expects the required-choice message for the complaint form; the complaint tests fill the questionnaire and check 5 + 14 choices and no consent box.
+- **Checks:** lint 0 / tsc 0 / build OK; Playwright home, pages and styleguide at 375 and 1280 px: 52 + 136 passed, 6 skipped. Checked in the browser at 1280 px, menu link included.
+
+## Home page: news as a magazine block (2026-10-21)
+
+Requested on 21.10.2026: the news section was too plain.
+
+- **NewsList:** the latest news is the lead story – large photo (3:2), category, headline, teaser; the other two sit beside it with a wide photo, category and headline. No boxes; the whole item is the link, the photo zooms slightly and the headline turns red on hover. Still no dates (the latest news are from 2021–2022).
+- **Photos:** the children on book stacks belong to the Kindertagespflege news, so "Pädagogische Angebote" in the offers uses its own counselling photo again – no photo twice on the page.
+- **Test:** the news test expects three links with one photo each and still no dates.
+- **Checks:** lint 0 / build OK / Playwright home at four widths green; checked in the browser at 375 and 1280 px.
+
+## Home page: house roof ends freely (2026-10-21)
+
+Requested on 21.10.2026: the roof of the logo house should not end in a point.
+
+- **HouseMark:** the body has no slanted top edge any more; the walls hang free under the roof, as in the logo, so the roof ends in its own round caps instead of meeting a second line in a point. The vertical seam starts just below the roof.
+- **Checks:** lint 0 / build OK / Playwright home at four widths green; checked in the browser at 1280 px.
+
+## Home page: brush-stroke underline (2026-10-21)
+
+Requested on 21.10.2026: the underlines as a brush stroke, a bit thicker.
+
+- **Marked** is a filled brush shape now (blunt start, tapering dry end, two bristle streaks) instead of an even line; `--spacing-mark` 0.55em, `--spacing-mark-offset` 0.18em, slightly wider than the word. A wrapper sets the box so the svg spans exactly the word.
+- **Animation:** painted once from left to right with a clip reveal when the heading scrolls in, then the clip is removed. Without JavaScript or with reduced motion it is simply there.
+- **Test:** the reduced-motion check reads the clip of the five brush strokes and the dash of the thread (6 elements, all static).
+
+**Checks**
+
+- lint 0 / tsc 0 / build OK. Playwright home at 375, 768, 1280 and 1920 px: 104 passed, 12 skipped. Checked in the browser at 1280 px.
+
+## Home page: thicker marker, the logo house as line drawing (2026-10-21)
+
+Requested on 21.10.2026: the underline is liked – thicker and more striking; subtle decorative elements derived from the house of the logo, spread across the home page.
+
+- **Marker underline:** stroke 5 px instead of 3 px, a little taller and lower (`--spacing-mark` 0.36em, `--spacing-mark-offset` 0.16em). The thread beside the offers is 4 px, the same motif.
+- **HouseMark (new, `src/components/ui/HouseMark.tsx`):** the house from the logo redrawn as lines on the logo's own grid – roof chevron, gabled body, the three puzzle seams with their round tabs – in the current text colour, with a fixed stroke width in pixels. Two variants: the roof alone, or the whole outline.
+- **Three quiet placements:** in the empty bottom-right corner of the offers chapter a large house in the line colour on the paper (tone-on-tone, from tablet width); a small blue roof above "Über uns"; in "Warum ABC" the house tone-on-tone in the top-right corner (desktop only). Blue stays reserved for the hand strokes – underline, thread, the small roof. The hero, news and partners stay undecorated; the footer keeps the solid brand mark.
+- **Layout:** the two decorated sections clip horizontally with `overflow-x-clip` (not `overflow-hidden`, which would stop the sticky photo frame); the drawings sit at `-z-10` inside `isolate`, so they paint above the paper but below the content.
+- **ScrollReveal:** the dash length of a drawn underline is the real path length scaled to the rendered size, re-measured on refresh, and released once the line is drawn, so a later resize never leaves gaps.
+- **Review:** three reviewer agents (restraint, accessibility and motion, layout) checked the pass, each finding verified by a second agent: the Warum-ABC house lost its blue and its animation, the offers house moved out of the heading row, the roof got a tighter box, the thread's round caps are no longer clipped.
+
+**Checks**
+
+- lint 0 / tsc 0 / build OK (42 static pages).
+- Playwright home at 375, 768, 1280 and 1920 px: 104 passed, 12 skipped (desktop- or mobile-only), including axe. Pages and styleguide at 375 and 1280 px: 136 passed.
+- Checked in the browser at 375 and 1280 px: thicker underline, thread with round caps, the three house placements, sticky frame still working, no console errors, no horizontal overflow.
+- Not uploaded to Netlify.
+
+## Home page: Großdruck – type instead of tiles, one blue thread (2026-10-21)
+
+Requested on 21.10.2026: no more rectangles and squares around the information, nicer or no icons, a few more faces, more air between sections, sections at viewport height, more colour and cheer, something that draws itself from top to bottom while scrolling, Apple-clean.
+
+Three independent concepts were designed and judged by three lenses (design director, front-end lead, audience); the editorial concept "Großdruck" won unanimously and took the scroll-drawn line from the second concept and the "full height on desktop only" rule from the third.
+
+- **Offers (`#angebote`):** new presentation "index" (`OfferIndex`, variant `index` in `OfferCards`): the six offers are one typographic list – title in Clash Display, one sentence, link line – beside a single sticky photo frame. The entry in the middle of the screen is active: its title is Navy, the others recede, the frame cross-fades to its photo. Between frame and list a thin ABC-Blue line draws itself downward exactly as far as you have scrolled. Phones get the first photo once and a plain list, no line. No cards, no icon tiles, no numbers.
+- **Photos:** Prüfungen → teacher at the digital board with the telc task (was the telc sign), Weiterbildungen → the ABC course room with participants (was a stock lecture), Pädagogische Angebote → three laughing children on book stacks (was a counselling photo). Sprach- & Integrationskurse crop to the teacher in front of the alphabet posters. Warum ABC gets the learners' photo (`why.image`), Über uns keeps the team photo, now 21:9 with all six faces.
+- **Über uns and Warum ABC** fill one screen each on large displays (`lg:min-h-svh`): heading beside the text and a wide team photo; the learners' photo beside four large figures and two calm sentences. No tiles, no check icons, no watermark.
+- **News:** three headlines as type in one narrow column; the headline is the link and turns red on hover. No "Weiterlesen", no arrows, no frames.
+- **Rhythm:** every home section below the hero uses `py-section-lg`; paper and white alternate (offers paper, about + news white, Warum ABC paper, partners white, blue footer). No border, shadow or tile anywhere below the hero.
+- **Marker underline:** the last word of every chapter heading gets a hand-drawn-feeling underline in ABC Blue (`Marked`, `SectionHeader mark`), drawn once when the heading scrolls in – the teacher's stroke from the whiteboard photo, the same motif as the thread. Without JavaScript or with reduced motion both are simply there, complete and static.
+- **Icons:** none below the hero; the photos do their job. The offer icons stay in the data for the secondary pages.
+- **SectionHeader** gained `size` (visual h1 on an h2), `mark` and `reveal` (the home page turns the fade-in off); `ScrollReveal` draws `[data-draw]` once and drifts `[data-parallax]` photos; three tokens: `--spacing-stage` (45svh per offer entry), `--spacing-mark`, `--spacing-mark-offset`.
+- **Tests:** the two offer tests describe the index (six entries, each one link; six photos in one frame, the first active; phones hide the rest), plus three new tests: frame swap at the entry in view, thread drawn when the list has passed, underline and thread present and static with reduced motion.
+- Hero, texts, colours, the morning's rules (red only for "Kurs finden", Navy for text, text links red on hover, no "Mehr erfahren") unchanged.
+
+**Checks**
+
+- lint 0 / tsc 0 / build OK (42 static pages).
+- Playwright home at 375, 768, 1280 and 1920 px: 104 passed, 12 skipped (desktop- or mobile-only), including axe and the three new tests (frame swap, thread, static underline with reduced motion). Pages and styleguide at 375 and 1280 px: 136 passed.
+- Checked in the browser at 375 and 1280 px: sticky frame and photo swap, thread progress, underline drawing, no console errors, no horizontal overflow. 1280 × 720 fit of the 4:5 frame under the header: by calculation (96 + 600 px), not seen.
+- Not uploaded to Netlify.
+
+**Open for the client**
+
+- The three photo swaps and the index presentation are reversible in `src/content/home.ts` and `page.tsx` (variant); if the thread or the underline does not please, each is one svg and one tween.
+- "1.200+ Teilnehmende" and "60+ Kurse und Prüfungen" are placeholders and are now set very large – real figures needed before launch.
+- More hue in the UI itself would be a palette decision; the one approved option is the light rosé wash for Warum ABC.
+
+## Warmer and lighter: warm surfaces, ABC Blue for elements, Navy for text only (2026-10-21)
+
+Requested on 21.10.2026: "wärmer, freundlicher, moderner" – the blue cast over the hero video goes, and of the two blues only the lighter ABC Blue is used for design elements; Navy stays for text.
+
+- **Light surfaces:** the cool blue wash, tint and lines are warm paper tones now – wash #F7F5F2, tint #EEEAE4, lines #E2DDD5 (`surface-2/3`, `line`, and the `blue-50/100/200/300` names that map to them). Shadows are tinted with Ink instead of Navy.
+- **Hero:** the shading over the video (and over every photo, `shade`) is warm dark Ink #242222 instead of Navy – no blue filter.
+- **Blue rule:** every `blue-400 … blue-950` token resolves to ABC Blue #1C4A83, so footer, subpage heroes, blue panels, status pills, section tone "navy", buttons and the active menu item are ABC Blue. Navy #123054 is used for text only (`text-navy`: headings, card titles, figures) and, tone-on-tone, for the brand mark on blue bands.
+- **Follow-ups so nothing is blue on blue:** footer links get a white chip with blue text on hover and a light divider line; the fact chips in the subpage hero are white with Navy text; the icon tile on the offer cards no longer changes colour on hover.
+- **Style guide:** labels and pairings follow the new rule ("Text auf Blau", Navy = headings and figures).
+- **Audit of every component after the remap** (6 readers, each finding checked by a second agent): 29 places fixed where a chip, ring, divider or panel had become the same colour as its background – the oral-exam cells and the time bar on the exam pages, the course-type icon tile, the fact dividers in spotlights, the tab trays, the exam-date filter panel, the map consent panel, the skip link, the hero photo ring, the editorial block, the selected filter chip, hover states – plus eight comments and style-guide labels that still said "Navy".
+- Unchanged: red accents and buttons, texts, structure, hero video, the morning's decisions.
+
+**Checks**
+
+- lint 0 / tsc 0 / build OK (42 static pages).
+- Playwright at 375 and 1280 px, 2 parallel browsers: home 48 passed, 4 skipped (desktop- or mobile-only); pages and styleguide 136 passed, including axe (WCAG 2.1 AA) on every page template. 768 and 1920 px were not run.
+- Checked in the browser at 375 and 1280 px: home, Kurse, Integrationskurse, telc, Kontakt – no console errors, no horizontal overflow.
+- Not uploaded to Netlify.
+
+## Home page: less template, same design (2026-10-21)
+
+Requested on 21.10.2026: keep the home page as it is, but remove what makes it look generated.
+
+- **Section labels:** the small line above each heading (Unsere Angebote, Über uns, News, Warum ABC, Partner & Förderer) is sentence case in ABC Blue instead of spaced capitals in red – on the subpage heroes too.
+- **Offer cards:** no "01–06" numbers (the offers are not a sequence), no category pill (the title says it already) and no large faded icon in the corner. The icon tile no longer rotates or turns red. Cards have a 16 px radius; on hover the frame turns ABC Blue with a soft shadow instead of lifting.
+- **News cards:** the category is plain text instead of a navy pill; same frame and hover as the offer cards.
+- **Warum ABC:** plain figures in Navy on the blue wash, without the icon circles and the hover lift; the two points are a simple check list instead of pills.
+- **Partner logos:** plain logos on the blue band – no white tiles, no lift. Logos without transparency are blended so their white boxes disappear.
+- **About:** photo with a 24 px radius (matches the reveal animation) and no shadow; it no longer zooms on hover, because it is not a link.
+- **Links:** text links use the same drawn arrow as the cards instead of the typed "→" character. Card links are blue and turn red on hover, like the text links.
+- **Motion:** the hero scroll arrow does not bounce; sections scroll in over 20 px instead of 32 px.
+- Unchanged: structure, texts, colours, hero video and button, footer, and every decision from earlier today.
+
+**Checks**
+
+- lint 0 / tsc 0 / build OK.
+- Playwright at 375 and 1280 px, 2 parallel browsers: home 48 passed, 4 skipped (desktop- or mobile-only); pages and styleguide 136 passed. 768 and 1920 px were not run.
+- Checked in the browser at 375 and 1280 px: no console errors or warnings, no horizontal overflow.
+- Not uploaded to Netlify.
+
 ## Colour sheet again, dark footer, interactive buttons, flat news photos (2026-10-21)
 
 Requested on 21.10.2026.
